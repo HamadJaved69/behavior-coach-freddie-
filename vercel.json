@@ -1,20 +1,13 @@
 {
-  "version": 2,
-  "builds": [
+  "rewrites": [
     {
-      "src": "src/server.ts",
-      "use": "@vercel/node"
-    }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "src/server.ts"
+      "source": "/(.*)",
+      "destination": "/api"
     }
   ],
   "crons": [
     {
-      "path": "/trigger-reminders",
+      "path": "/api/trigger-reminders",
       "schedule": "0 9 * * *"
     }
   ]
