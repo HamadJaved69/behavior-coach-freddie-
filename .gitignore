@@ -1,3 +1,6 @@
+.DS_Store
+ngrok.exe
+
 # Logs
 logs
 *.log
