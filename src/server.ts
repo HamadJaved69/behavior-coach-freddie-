@@ -3,7 +3,6 @@ dotenv.config();
 
 import express from 'express';
 import { webhookRouter } from './routes/webhooks';
-import cron from 'node-cron';
 import { reminderService } from './services/reminderService';
 
 const app = express();
@@ -13,15 +12,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 app.use('/webhooks', webhookRouter);
-// Schedule reminders to run every day at 9 AM UTC
-cron.schedule('0 9 * * *', () => {
-  console.log('Running scheduled daily reminders...');
-  reminderService.sendDailyReminders();
-}, {
-  timezone: 'UTC'
-});
 
-// Manual trigger endpoint for testing reminders
+// Manual trigger endpoint for reminders (use Vercel Cron to call this)
 app.post('/trigger-reminders', async (_req, res) => {
   try {
     await reminderService.sendDailyReminders();
@@ -50,9 +42,15 @@ app.get('/health', (_req, res) => {
   return res.json({ status: 'healthy' });
 });
 
-const port = parseInt(process.env.PORT || '5000', 10);
-app.listen(port, '0.0.0.0', () => {
-  console.log(`Server listening on http://0.0.0.0:${port}`);
-});
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  const port = parseInt(process.env.PORT || '5000', 10);
+  app.listen(port, '0.0.0.0', () => {
+    console.log(`Server listening on http://0.0.0.0:${port}`);
+  });
+}
+
+// Export for Vercel serverless
+export default app;
 
 
